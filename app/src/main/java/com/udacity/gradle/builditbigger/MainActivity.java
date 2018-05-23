@@ -7,8 +7,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.nickwelna.javajokes.Joker;
 
 public class MainActivity extends AppCompatActivity {
+
+    Joker joker = new Joker();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void tellJoke(View view) {
-        Toast.makeText(this, "derp", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, joker.getJoke(), Toast.LENGTH_LONG).show();
     }
 
 
