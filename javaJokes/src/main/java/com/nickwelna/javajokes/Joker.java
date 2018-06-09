@@ -4,7 +4,7 @@ import java.util.Random;
 
 public class Joker {
 
-    private Random random;
+    private final Random random;
 
     public Joker() {
 

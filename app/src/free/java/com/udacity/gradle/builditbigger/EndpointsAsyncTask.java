@@ -15,11 +15,12 @@ import com.nickwelna.jokeviews.JokeActivity;
 import com.udacity.gradle.builditbigger.backend.myApi.MyApi;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 
-public class EndpointsAsyncTask extends AsyncTask<Context, Void, String> {
+class EndpointsAsyncTask extends AsyncTask<Context, Void, String> {
 
     private static MyApi myApiService = null;
-    private Context context;
+    private WeakReference<Context> contextRef;
 
     @Override
     protected String doInBackground(Context... params) {
@@ -56,7 +57,7 @@ public class EndpointsAsyncTask extends AsyncTask<Context, Void, String> {
 
         }
 
-        context = params[0];
+        contextRef = new WeakReference<>(params[0]);
 
         try {
 
@@ -74,6 +75,8 @@ public class EndpointsAsyncTask extends AsyncTask<Context, Void, String> {
     @Override
     protected void onPostExecute(final String result) {
 
+        final Context context = contextRef.get();
+
         ProgressBar progressBar = ((MainActivity) context).findViewById(R.id.progressBar);
         progressBar.setVisibility(View.GONE);
 
@@ -81,23 +84,35 @@ public class EndpointsAsyncTask extends AsyncTask<Context, Void, String> {
                 (MainActivityFragment) ((MainActivity) context).getSupportFragmentManager()
                                                                .findFragmentById(R.id.fragment);
 
-        fragment.interstitialAd.setAdListener(new AdListener() {
+        if (fragment.interstitialAd != null) {
 
-            @Override
-            public void onAdClosed() {
+            fragment.interstitialAd.setAdListener(new AdListener() {
 
-                Intent intent = new Intent(context, JokeActivity.class);
-                intent.putExtra(JokeActivity.JOKE_EXTRA, result);
+                @Override
+                public void onAdClosed() {
 
-                context.startActivity(intent);
+                    Intent intent = new Intent(context, JokeActivity.class);
+                    intent.putExtra(JokeActivity.JOKE_EXTRA, result);
+
+                    context.startActivity(intent);
+
+                }
+
+            });
+
+            if (fragment.interstitialAd.isLoaded()) {
+
+                fragment.interstitialAd.show();
+
 
             }
+        }
+        else {
 
-        });
+            Intent intent = new Intent(context, JokeActivity.class);
+            intent.putExtra(JokeActivity.JOKE_EXTRA, result);
 
-        if (fragment.interstitialAd.isLoaded()) {
-
-            fragment.interstitialAd.show();
+            context.startActivity(intent);
 
         }
 

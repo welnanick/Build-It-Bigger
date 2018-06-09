@@ -20,7 +20,12 @@ public class JokeActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
 
-        String joke = extras.getString(JOKE_EXTRA);
+        String joke = null;
+        if (extras != null) {
+
+            joke = extras.getString(JOKE_EXTRA);
+
+        }
 
         jokeTextView.setText(joke);
 

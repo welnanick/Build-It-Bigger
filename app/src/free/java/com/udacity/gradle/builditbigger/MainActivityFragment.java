@@ -1,5 +1,6 @@
 package com.udacity.gradle.builditbigger;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -28,11 +29,17 @@ public class MainActivityFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        MobileAds.initialize(getContext(), "ca-app-pub-3940256099942544~3347511713");
+        Context context = getContext();
 
-        interstitialAd = new InterstitialAd(getContext());
-        interstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
-        interstitialAd.loadAd(new AdRequest.Builder().build());
+        MobileAds.initialize(context, "ca-app-pub-3940256099942544~3347511713");
+
+        if (context != null) {
+
+            interstitialAd = new InterstitialAd(context);
+            interstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+            interstitialAd.loadAd(new AdRequest.Builder().build());
+
+        }
 
     }
 
@@ -57,7 +64,11 @@ public class MainActivityFragment extends Fragment {
     public void onResume() {
 
         super.onResume();
-        interstitialAd.loadAd(new AdRequest.Builder().build());
+        if (interstitialAd != null) {
+
+            interstitialAd.loadAd(new AdRequest.Builder().build());
+
+        }
 
     }
 
