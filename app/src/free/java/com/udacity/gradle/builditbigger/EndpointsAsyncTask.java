@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import com.google.android.gms.ads.AdListener;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
@@ -22,6 +23,14 @@ public class EndpointsAsyncTask extends AsyncTask<Context, Void, String> {
 
     @Override
     protected String doInBackground(Context... params) {
+
+        //simulates loading time for joke
+        try {
+            Thread.sleep(5000);
+        }
+        catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         if (myApiService == null) {  // Only do this once
             MyApi.Builder builder = new MyApi.Builder(AndroidHttp.newCompatibleTransport(),
@@ -63,15 +72,34 @@ public class EndpointsAsyncTask extends AsyncTask<Context, Void, String> {
     }
 
     @Override
-    protected void onPostExecute(String result) {
+    protected void onPostExecute(final String result) {
 
         ProgressBar progressBar = ((MainActivity) context).findViewById(R.id.progressBar);
         progressBar.setVisibility(View.GONE);
 
-        Intent intent = new Intent(context, JokeActivity.class);
-        intent.putExtra(JokeActivity.JOKE_EXTRA, result);
+        MainActivityFragment fragment =
+                (MainActivityFragment) ((MainActivity) context).getSupportFragmentManager()
+                                                               .findFragmentById(R.id.fragment);
 
-        context.startActivity(intent);
+        fragment.interstitialAd.setAdListener(new AdListener() {
+
+            @Override
+            public void onAdClosed() {
+
+                Intent intent = new Intent(context, JokeActivity.class);
+                intent.putExtra(JokeActivity.JOKE_EXTRA, result);
+
+                context.startActivity(intent);
+
+            }
+
+        });
+
+        if (fragment.interstitialAd.isLoaded()) {
+
+            fragment.interstitialAd.show();
+
+        }
 
     }
 
