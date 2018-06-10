@@ -29,7 +29,7 @@ public class Joker {
                                               "understand binary, those who don't, and those who " +
                                               "weren't expecting a base 3 joke."};
 
-        return jokes[random.nextInt(5)];
+        return jokes[random.nextInt(jokes.length)];
 
     }
 
